@@ -6,7 +6,6 @@
 #include <cstdlib>
 
 #define N_SHAPES 7
-#define BOUND_RATIO 1.2
 
 class hsv_color {
     float hsv[3] = {0, 0, 0};
@@ -101,7 +100,7 @@ class noof {
     
     float delta = 0;
     
-    float threshold = 2.0; // controls the plotting frequency
+    float threshold = 1.6; // controls the plotting frequency
 
     int tko = 0;
     
@@ -159,13 +158,13 @@ static float rand_unif() {
 }
 
 bool noof::out_of_bound_x(int t) {
-    return pos[t][0] < -wd * BOUND_RATIO / (float) ht && dir[t][0] < 0 ||
-           pos[t][0] >  wd * BOUND_RATIO / (float) ht && dir[t][0] > 0;
+    return pos[t][0] < -wd * (1 + 2 * sca[t]) / ht && dir[t][0] < 0 ||
+           pos[t][0] >  wd * (1 + 2 * sca[t]) / ht && dir[t][0] > 0;
 }
 
 bool noof::out_of_bound_y(int t) {
-    return pos[t][1] < -BOUND_RATIO && dir[t][1] < 0 ||
-           pos[t][1] >  BOUND_RATIO && dir[t][1] > 0;
+    return pos[t][1] < -(1 + 2 * sca[t]) && dir[t][1] < 0 ||
+           pos[t][1] >  (1 + 2 * sca[t]) && dir[t][1] > 0;
 }
 
 void noof::init_shape(int i) {
@@ -386,7 +385,7 @@ int main()
         
         sf::Time t2 = clock.getElapsedTime();
         float delta = (t2 - t1).asSeconds();
-        my_noof.draw_noof(delta * 50);
+        my_noof.draw_noof(delta * 40);
         t1 = t2;
         
         window.display();
