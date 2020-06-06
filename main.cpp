@@ -193,21 +193,23 @@ void noof::init_shape(int i) {
 void noof::draw_leaf(int l) {
     float wobble;
     int blades = num_blades[l];
-    float y = 0.10 * sin(geep[l] * M_PI / 180.0) + 0.099 * sin(geep[l] * 5.12 * M_PI / 180.0);
-    if (y < 0) y = -y;
-    float x = 0.15 * cos(geep[l] * M_PI / 180.0) + 0.149 * cos(geep[l] * 5.12 * M_PI / 180.0);
-    if (x < 0) x = -x;
-    if (y < 0.001 && x > 0.000002 && ((tko & 0x1) == 0)) {
+    float x = fabs(0.15 * cos(geep[l] * M_PI / 180.0) + 0.149 * cos(geep[l] * 5.12 * M_PI / 180.0));
+    float y = fabs(0.10 * sin(geep[l] * M_PI / 180.0) + 0.099 * sin(geep[l] * 5.12 * M_PI / 180.0));
+    
+    if (y < 1e-3 && x > 2e-6 && ((tko & 0x1) == 0)) {
         init_shape(l);      /* let it become reborn as something else */
         tko++;
-        std::cerr << "Reborn.\n";
+        std::cerr << "Leaf " << l << " reborn.\n";
         return;
     }
     {
         float w1 = sin(geep[l] * 15.3 * M_PI / 180.0);
         wobble = 3.0 + 2.0 * sin(geep[l] * 0.4 * M_PI / 180.0) + 3.94261 * w1;
     }
+
+    // keep blade thin
     if (y > x * blade_ratio[blades]) y = x * blade_ratio[blades];
+
     for (int b = 0; b < blades; b++) {
         sf::Transform t;
         t.translate(wd / 2, ht / 2);
