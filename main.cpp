@@ -1,9 +1,10 @@
 #include <SFML/Graphics.hpp>
+#include <functional>
 #include <iostream>
 #include <vector>
+#include <chrono>
+#include <random>
 #include <cmath>
-#include <ctime>
-#include <cstdlib>
 
 #define N_SHAPES 7
 
@@ -153,10 +154,6 @@ noof::noof(sf::RenderWindow& window) :
     }
 }
 
-static float rand_unif() {
-    return (float) rand() / RAND_MAX;
-}
-
 bool noof::out_of_bound_x(int t) {
     return pos[t][0] < -wd * (1 + 2 * sca[t]) / ht && dir[t][0] < 0 ||
            pos[t][0] >  wd * (1 + 2 * sca[t]) / ht && dir[t][0] > 0;
@@ -168,6 +165,11 @@ bool noof::out_of_bound_y(int t) {
 }
 
 void noof::init_shape(int i) {
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+    std::default_random_engine generator(seed);
+    std::uniform_real_distribution<float> distribution(0, 1);
+    auto rand_unif = std::bind(distribution, generator);
+    
     for (int k = 0; k < 2; k++) {
         pos[i][k] = (rand_unif() - 0.5) * 2;;
         dir[i][k] = (rand_unif() - 0.5) * 0.05;
@@ -364,8 +366,6 @@ int main()
     );
     
     noof my_noof(window);
-    
-    srand(time(NULL));
     
     sf::Clock clock;
     sf::Time t1 = clock.getElapsedTime();
